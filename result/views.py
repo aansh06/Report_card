@@ -27,11 +27,22 @@ def get_students(request):
 
     return render(request,'students.html',context={'queryset':page_obj})
 
+from .seed import generate_rank
 
 def diplay_marks(request, student_id):
+    # generate_rank()
     student_id_obj = StudentId.objects.get(student_id=student_id)
-    student = Student.objects.get(student_id=student_id_obj)
+    student_detail = Student.objects.get(student_id=student_id_obj)
 
     query_set = SubjectMarks.objects.filter(student__student_id__student_id = student_id)
     total_marks =  query_set.aggregate(total_marks=Sum('marks'))
-    return render(request,'display_marks.html',context={'student':student , 'queryset':query_set,'totalmarks':total_marks})
+
+    #  rank
+    # rank=1
+    # ranks=Student.objects.annotate(marks = Sum('studentmarks__marks')).order_by('-marks')
+    # for r in ranks:
+    #     if student_id == r.student_id.student_id:
+    #         break
+    #     rank+=1
+
+    return render(request,'display_marks.html',context={ 'student_detail':student_detail ,'queryset':query_set,'totalmarks':total_marks})

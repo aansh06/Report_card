@@ -2,6 +2,7 @@ from faker import Faker
 fake = Faker()
 import random
 from .models import *
+from django.db.models import Sum
 
 def seed_db(n=10) -> None:
     try:
@@ -41,3 +42,13 @@ def seed_marks():
                 )
     except Exception as e:
         print(e)
+
+def generate_rank() :
+    rank=1
+    ranks=Student.objects.annotate(marks = Sum('studentmarks__marks')).order_by('-marks')
+    for r in ranks:
+        StudentRank.objects.create(
+            student=r,
+            student_rank=rank
+        )
+        rank+=1
